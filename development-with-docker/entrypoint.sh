@@ -6,8 +6,9 @@ set -e
 # and pass them as arguments to the odoo process if not present in the config file
 : ${HOST:=${DB_PORT_5432_TCP_ADDR:='db'}}
 : ${PORT:=${DB_PORT_5432_TCP_PORT:=5432}}
-: ${USER:=${DB_ENV_POSTGRES_USER:=${POSTGRES_USER:='odoo'}}}
-: ${PASSWORD:=${DB_ENV_POSTGRES_PASSWORD:=${POSTGRES_PASSWORD:='odoo'}}}
+: ${USER:=${DB_ENV_POSTGRES_USER:=${POSTGRES_USER:='odoo12'}}}
+: ${PASSWORD:=${DB_ENV_POSTGRES_PASSWORD:=${POSTGRES_PASSWORD:='odoo12'}}}
+: ${DB_NAME:=${DB_ENV_POSTGRES_DB_NAME:=${POSTGRES_DB_NAME:='odoo12-devel'}}}
 
 DB_ARGS=()
 function check_config() {
@@ -22,24 +23,25 @@ function check_config() {
 check_config "db_host" "$HOST"
 check_config "db_port" "$PORT"
 check_config "db_user" "$USER"
+check_config "db_name" "$DB_NAME"
 check_config "db_password" "$PASSWORD"
 
 case "$1" in
     -- | odoo)
         shift
         if [[ "$1" == "scaffold" ]] ; then
-            exec odoo "$@"
+            exec /opt/odoo12/base/odoo-bin "$@"
         else
             wait-for-psql.py ${DB_ARGS[@]} --timeout=30
-            exec odoo "$@" "${DB_ARGS[@]}"
+            exec /opt/odoo12/base/odoo-bin "$@" "${DB_ARGS[@]}"
         fi
         ;;
     -*)
         wait-for-psql.py ${DB_ARGS[@]} --timeout=30
-        exec odoo "$@" "${DB_ARGS[@]}"
+        exec /opt/odoo12/base/odoo-bin "$@" "${DB_ARGS[@]}"
         ;;
     *)
-        exec "$@"
+        exec /opt/odoo12/base/odoo-bin -c /etc/odoo/odoo.conf
 esac
 
 exit 1
