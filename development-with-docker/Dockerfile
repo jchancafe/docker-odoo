@@ -1,5 +1,5 @@
 FROM debian:stretch-slim
-MAINTAINER Johnny Chancafe. <jchancafer@gmail.com>
+#MAINTAINER Johnny Chancafe. <jchancafer@gmail.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
